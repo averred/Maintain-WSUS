@@ -118,7 +118,7 @@ Else {
     $AllUpdates | Where-Object { $_.Update.Title -like "*ARM64*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Preview Updates'
-    $AllUpdates | Where-Object { $_.Update.Title -like "*Preview*"} | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*Preview*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Beta Updates'
     $AllUpdates | Where-Object { $_.Update.Title -like "*Beta*" } | Deny-WsusUpdate -Verbose
@@ -169,11 +169,11 @@ Else {
 
     # Accept license agreements
     [void][reflection.assembly]::LoadWithPartialName('Microsoft.UpdateServices.Administration')
-    $WSUS = [Microsoft.UpdateServices.Administration.AdminProxy]::getUpdateServer($ENV:ComputerName,$False,8530)
+    $WSUS = [Microsoft.UpdateServices.Administration.AdminProxy]::getUpdateServer($ENV:ComputerName, $False, 8530)
     $Updates = $WSUS.GetUpdates()
-    $License = $Updates | Where-Object {$_.RequiresLicenseAgreementAcceptance}
+    $License = $Updates | Where-Object { $_.RequiresLicenseAgreementAcceptance }
     $License | Select-Object Title
-    $License | ForEach-Object {$_.AcceptLicenseAgreement()}
+    $License | ForEach-Object { $_.AcceptLicenseAgreement() }
 
 
     # Cleanup the SUDB
