@@ -112,19 +112,19 @@ Else {
     $AllUpdates = Get-WsusUpdate -Approval AnyExceptDeclined -Classification All -Status Any
 
     Write-Output 'Decline x86 Updates'
-    $AllUpdates | Where { $_.Update.Title -like "*X86*" } | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*X86*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline ARM64 Updates'
-    $AllUpdates | Where { $_.Update.Title -like "*ARM64*" } | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*ARM64*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Preview Updates'
-    $AllUpdates | Where { $_.Update.Title -like "*Preview*"} | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*Preview*"} | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Beta Updates'
-    $AllUpdates | Where { $_.Update.Title -like "*Beta*" } | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*Beta*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Other Updates'
-    $AllUpdates | Where { $_.Update.PublicationState -like "Expired" `
+    $AllUpdates | Where-Object { $_.Update.PublicationState -like "Expired" `
                       -or $_.Update.Title -like "*Windows 10*N,*" `
                       -or $_.Update.Title -like "*Windows 10*N version*" `
                       -or $_.Update.Title -like "*Windows 10 Education,*" `
@@ -138,10 +138,10 @@ Else {
                       -or $_.Update.Title -like "*1803*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Language Pack not en-GB'
-    $AllUpdates | Where { $_.Update.Title -like "*Lang*" -and $_.Update.Title -notlike "*en-GB*" } | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*Lang*" -and $_.Update.Title -notlike "*en-GB*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Decline Feature update not en-GB'
-    $AllUpdates | Where { $_.Update.Title -like "*Feature update to Windows 10*" -and $_.Update.Title -notlike "*en-GB*" } | Deny-WsusUpdate -Verbose
+    $AllUpdates | Where-Object { $_.Update.Title -like "*Feature update to Windows 10*" -and $_.Update.Title -notlike "*en-GB*" } | Deny-WsusUpdate -Verbose
 
     Write-Output 'Cleanup Obsolete Computers'
     $CleanupObsoleteComputers = Invoke-WsusServerCleanup -UpdateServer $WSUSSrv -CleanupObsoleteComputers
@@ -171,9 +171,9 @@ Else {
     [void][reflection.assembly]::LoadWithPartialName('Microsoft.UpdateServices.Administration')
     $WSUS = [Microsoft.UpdateServices.Administration.AdminProxy]::getUpdateServer($ENV:ComputerName,$False,8530)
     $Updates = $WSUS.GetUpdates()
-    $License = $Updates | Where {$_.RequiresLicenseAgreementAcceptance}
-    $License | Select Title
-    $License | ForEach {$_.AcceptLicenseAgreement()}
+    $License = $Updates | Where-Object {$_.RequiresLicenseAgreementAcceptance}
+    $License | Select-Object Title
+    $License | ForEach-Object {$_.AcceptLicenseAgreement()}
 
 
     # Cleanup the SUDB
