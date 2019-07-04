@@ -13,7 +13,7 @@
         Progress
         Log file stored in .\Logs\<Date>_<Time>_Maintain-WSUS.ps1.log
     .NOTES
-        Version:        1.0
+        Version:        1.1
         Author:         Talha Khan <talha@averred.net>
         Creation Date:  01/05/2019
         Last modified:  04/07/2019
@@ -51,14 +51,18 @@ Function Invoke-Exe{
 }
 
 # Setup
-$RunningFromFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
-$CommandName = Split-Path $MyInvocation.MyCommand.Path -Leaf
-$WsusDBMaintenanceFile = '{0}\WsusDBMaintenance.sql' -f $RunningFromFolder
+$ScriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+$ScriptName = Split-Path $MyInvocation.MyCommand.Path -Leaf
+$WsusDBMaintenanceFile = '{0}\WsusDBMaintenance.sql' -f $ScriptFolder
 
 # Logging
-$LogFile = '{0}\Logs\{1}_{2}.log' -f $RunningFromFolder, (Get-Date -Format yyyyMMdd_HHmmss), $CommandName
+$LogFolder = '{0}\Logs' -f $ScriptFolder
+$LogFile = '{0}\{1}_{2}.log' -f $LogFolder, (Get-Date -Format yyyyMMdd_HHmmss), $ScriptName
+$LogRetentionDays = 7
 
 Start-Transcript -Path $LogFile
+Write-Output ('Cleaning up logs older than {0} days' -f $LogRetentionDays)
+Get-ChildItem -Path $LogFolder | Where-Object {($_.LastWriteTime -lt (Get-Date).AddDays(-$LogRetentionDays))} | Remove-Item -Verbose
 
 # Connect to DB
 $WSUSDB = '\\.\pipe\Microsoft##WID\tsql\query'
